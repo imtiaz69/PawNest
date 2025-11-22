@@ -34,7 +34,7 @@ const Header = () => {
             <div className="flex gap-[10px] items-center">
               <div><img src="/images/logo.webp" alt="Peddy Logo" /></div>
               <div>
-                <p className="font-extrabold text-black text-[32px]">Peddy</p>
+                <p className="font-extrabold text-black text-[32px]">PawNest</p>
               </div>
             </div>
           </div>
