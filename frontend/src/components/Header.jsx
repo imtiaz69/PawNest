@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Header = () => {
+const Header = ({ onLoginClick }) => {
   return (
-    <header className="p-2 fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+    <header className="p-2 fixed top-0 left-0 right-0 z-40 bg-white shadow-md">
       <nav className="max-w-[1270px] mx-auto">
         <div className="navbar bg-base-100">
           <div className="navbar-start">
@@ -34,7 +34,7 @@ const Header = () => {
             <div className="flex gap-[10px] items-center">
               <div><img src="/images/logo.webp" alt="Peddy Logo" /></div>
               <div>
-                <p className="font-extrabold text-black text-[32px]">PawNest</p>
+                <p className="font-extrabold text-black text-[32px]">Peddy</p>
               </div>
             </div>
           </div>
@@ -46,9 +46,14 @@ const Header = () => {
             </ul>
           </div>
           <div className="navbar-end">
-            <a className="btn bg-inherit border-blue-100 rounded-full">
+            <button
+              type="button"
+              className="btn bg-inherit border-blue-100 rounded-full"
+              onClick={() => onLoginClick && onLoginClick()}
+              aria-label="Open login"
+            >
               <i className="fa-regular fa-user"></i>
-            </a>
+            </button>
           </div>
         </div>
       </nav>
