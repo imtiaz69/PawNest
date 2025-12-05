@@ -1,38 +1,45 @@
 import express from "express";
-import multer from "multer";
-import { storage } from "../config/cloudinary.js";
+import { upload, uploadToCloudinary } from "../config/upload.js"; // use your new upload.js
 import Pet from "../models/pet.js";
 import User from "../models/user.js";
 
 const router = express.Router();
-const upload = multer({ storage });
 
-router.post("/create-post", upload.single("image"), async (req, res) => {
-  const { name, details, DOB, breed, gender, category, posted_by } = req.body;
+// POST /create-post
+router.post(
+  "/create-post",
+  upload.single("image"),
+  uploadToCloudinary("pet_posts"),
+  async (req, res) => {
+    const { name, details, DOB, breed, gender, category, posted_by } = req.body;
 
-  try {
-    const newPost = await Pet.create({
-      name,
-      details,
-      image: req.file.path,
-      DOB,
-      breed,
-      gender,
-      category,
-      posted_by,
-    });
+    try {
+      const newPost = await Pet.create({
+        name,
+        details,
+        image: req.file?.cloudinaryUrl || "", // Cloudinary URL
+        DOB,
+        breed,
+        gender,
+        category,
+        posted_by,
+      });
 
-    await User.findByIdAndUpdate(posted_by, {
-      $push: { posts: newPost._id },
-    });
+      if (posted_by) {
+        await User.findByIdAndUpdate(posted_by, {
+          $push: { posts: newPost._id },
+        });
+      }
 
-    res.status(201).json({ success: true, post: newPost });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: err.message });
+      res.status(201).json({ success: true, post: newPost });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: err.message });
+    }
   }
-});
+);
 
+// GET /all-post
 router.get("/all-post", async (req, res) => {
   try {
     const posts = await Pet.find();
@@ -42,6 +49,7 @@ router.get("/all-post", async (req, res) => {
   }
 });
 
+// POST /update-status
 router.post("/update-status", async (req, res) => {
   const { id, status } = req.body;
 
@@ -70,6 +78,7 @@ router.post("/update-status", async (req, res) => {
   }
 });
 
+// POST /adopt-request
 router.post("/adopt-request", async (req, res) => {
   const { id, user_id } = req.body;
 
