@@ -40,14 +40,26 @@ router.post(
 );
 
 // GET /all-post
+// router.get("/all-post", async (req, res) => {
+//   try {
+//     const posts = await Pet.find();
+//     res.status(200).json({ success: true, posts });
+//   } catch (err) {
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// });
+
 router.get("/all-post", async (req, res) => {
   try {
-    const posts = await Pet.find();
+    // Find only pets with status "available"
+    const posts = await Pet.find({ status: "available" });
+
     res.status(200).json({ success: true, posts });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 // POST /update-status
 router.post("/update-status", async (req, res) => {
