@@ -3,8 +3,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-// import petRoutes from "./routes/petRoutes.js";
-// import userRoutes from "./routes/userRoutes.js";
+import petRoutes from "./routes/petRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -29,7 +29,7 @@ const connectDB = async () => {
 
 connectDB();
 
-// app.use("/api/user", userRoutes);
-// app.use("/api/pet", petRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/pet", petRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
