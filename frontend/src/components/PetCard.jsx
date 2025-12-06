@@ -1,11 +1,29 @@
 import React, { useState } from "react";
 
-const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt }) => {
+const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt, onLoginClick, petOwnerId }) => {
   const [isAdopted, setIsAdopted] = useState(false);
 
   const handleAdopt = () => {
+    const user = JSON.parse(localStorage.getItem("peddy-user"));
+    const user_id = user?.user_id;
+
+    if (!user_id) {
+      onLoginClick();
+      return;
+    }
+
+    if (user_id === petOwnerId) {
+      return;
+    }
+
     setIsAdopted(true);
     onAdopt();
+  };
+
+  const isOwnPet = () => {
+    const user = JSON.parse(localStorage.getItem("peddy-user"));
+    const user_id = user?.user_id;
+    return user_id && user_id === petOwnerId;
   };
 
   const pet_name = checkNull(pet.name);
@@ -52,7 +70,6 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt }) => {
           <img src="/images/dollar.png" alt="Price icon" />
           <h1 className="text-[16px] text-gray-500">Price: {price}</h1>
         </div> */}
-        <hr />
         <div className="card-actions mt-3 flex justify-between">
           <button
             onClick={onLike}
@@ -62,12 +79,13 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt }) => {
           </button>
           <button
             onClick={handleAdopt}
-            disabled={isAdopted}
+            disabled={isAdopted || isOwnPet()}
+            title={isOwnPet() ? "Cannot adopt your own pet" : ""}
             className={`btn bg-inherit border border-green-text/20 text-green-text text-[18px] rounded-[8px] font-bold ${
-              isAdopted ? "bg-gray-300" : ""
+              isAdopted || isOwnPet() ? "bg-gray-300" : ""
             }`}
           >
-            {isAdopted ? "Adopted" : "Adopt"}
+            {isAdopted ? "Adopted" : isOwnPet() ? "Can't Adopt" : "Adopt"}
           </button>
           <button
             onClick={onDetails}

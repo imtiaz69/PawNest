@@ -102,17 +102,26 @@ router.post("/adopt-request", async (req, res) => {
   }
 
   try {
+    const pet = await Pet.findById(id);
+
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Pet not found." });
+    }
+
+    // Check if user is the pet owner
+    if (pet.posted_by.toString() === user_id) {
+      return res
+        .status(403)
+        .json({ success: false, message: "You cannot adopt your own posted pet." });
+    }
+
     const updatedPet = await Pet.findByIdAndUpdate(
       id,
       { $addToSet: { request_by: user_id } },
       { new: true }
     );
-
-    if (!updatedPet) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Pet not found." });
-    }
 
     res.status(200).json({ success: true, updatedPet });
   } catch (err) {

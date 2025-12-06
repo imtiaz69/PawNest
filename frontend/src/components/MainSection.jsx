@@ -5,7 +5,7 @@ import LikedPets from "./LikedPets.jsx";
 import Spinner from "./Spinner.jsx";
 import { FaDog, FaCat, FaDove, FaPaw } from "react-icons/fa";
 
-const MainSection = ({ onPetDetails, onAdoptPet }) => {
+const MainSection = ({ onPetDetails, onAdoptPet, onLoginClick }) => {
   const [categories, setCategories] = useState([
     { category: "All", icon: <FaPaw /> },
     { category: "Dog", icon: <FaDog /> },
@@ -13,13 +13,19 @@ const MainSection = ({ onPetDetails, onAdoptPet }) => {
     { category: "Bird", icon: <FaDove /> },
   ]);
 
-  const handleAdoptPet = async (petId) => {
+  const handleAdoptPet = async (petId, petOwnerId) => {
     try {
       const user = JSON.parse(localStorage.getItem("peddy-user"));
       const user_id = user?.user_id;
 
       if (!user_id) {
-        toast.error("User not logged in!");
+        toast.error("Please login to adopt a pet");
+        onLoginClick();
+        return;
+      }
+
+      if (user_id === petOwnerId) {
+        toast.error("You cannot adopt your own posted pet");
         return;
       }
 
@@ -147,7 +153,9 @@ const MainSection = ({ onPetDetails, onAdoptPet }) => {
                   checkNull={checkNull}
                   onLike={() => handleLikePet(pet)}
                   onDetails={() => onPetDetails(pet)}
-                  onAdopt={() => handleAdoptPet(pet._id)}
+                  onAdopt={() => handleAdoptPet(pet._id, pet.posted_by)}
+                  onLoginClick={onLoginClick}
+                  petOwnerId={pet.posted_by}
                 />
               ))
             )}

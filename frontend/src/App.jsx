@@ -94,6 +94,7 @@ function App() {
                 <MainSection
                   onPetDetails={handlePetDetails}
                   onAdoptPet={handleAdoptPet}
+                  onLoginClick={() => setShowLogin(true)}
                 />
                 <Footer />
                 {showDetailsModal && selectedPet && (
