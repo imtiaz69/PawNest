@@ -52,8 +52,8 @@ router.post(
 
 router.get("/all-post", async (req, res) => {
   try {
-    // Find only pets with status "available"
-    const posts = await Pet.find({ status: "available" });
+    // Find pets with status "available" or "pending"
+    const posts = await Pet.find({ status: { $in: ["available", "pending"] } });
 
     res.status(200).json({ success: true, posts });
   } catch (err) {
@@ -117,9 +117,58 @@ router.post("/adopt-request", async (req, res) => {
         .json({ success: false, message: "You cannot adopt your own posted pet." });
     }
 
+    // Check if pet is already adopted
+    if (pet.status === "adopted") {
+      return res
+        .status(409)
+        .json({ success: false, message: "This pet has already been adopted." });
+    }
+
     const updatedPet = await Pet.findByIdAndUpdate(
       id,
-      { $addToSet: { request_by: user_id } },
+      { 
+        $addToSet: { request_by: user_id },
+        status: "pending",
+        adopted_by: user_id
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ success: true, updatedPet });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /confirm-adoption - Owner confirms adoption
+router.post("/confirm-adoption", async (req, res) => {
+  const { id, user_id } = req.body;
+
+  if (!id || !user_id) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Pet ID and User ID are required." });
+  }
+
+  try {
+    const pet = await Pet.findById(id);
+
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Pet not found." });
+    }
+
+    // Check if requester is the pet owner
+    if (pet.posted_by.toString() !== user_id) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Only pet owner can confirm adoption." });
+    }
+
+    const updatedPet = await Pet.findByIdAndUpdate(
+      id,
+      { status: "adopted" },
       { new: true }
     );
 

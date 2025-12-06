@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import CategoryButton from "./CategoryButton.jsx";
 import PetCard from "./PetCard.jsx";
 import LikedPets from "./LikedPets.jsx";
@@ -29,6 +30,12 @@ const MainSection = ({ onPetDetails, onAdoptPet, onLoginClick }) => {
         return;
       }
 
+      // Set adoption status to pending
+      setAdoptionStatus((prev) => ({
+        ...prev,
+        [petId]: "pending",
+      }));
+
       const res = await fetch("http://localhost:5000/api/pet/adopt-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,10 +46,46 @@ const MainSection = ({ onPetDetails, onAdoptPet, onLoginClick }) => {
 
       if (data.success) {
         toast.success("Adoption request sent successfully!");
+        
+        // Start polling for adoption confirmation
+        const pollInterval = setInterval(async () => {
+          try {
+            const petRes = await fetch(`http://localhost:5000/api/pet/${petId}`);
+            const petData = await petRes.json();
+            
+            if (petData.success && petData.pet) {
+              const petStatus = petData.pet.status;
+              setAdoptionStatus((prev) => ({
+                ...prev,
+                [petId]: petStatus,
+              }));
+              
+              // Stop polling once adopted
+              if (petStatus === "adopted") {
+                clearInterval(pollInterval);
+                toast.success("Adoption confirmed!");
+              }
+            }
+          } catch (err) {
+            console.error("Error polling pet status:", err);
+          }
+        }, 2000); // Poll every 2 seconds
+
+        // Clear polling after 5 minutes if not adopted
+        setTimeout(() => clearInterval(pollInterval), 5 * 60 * 1000);
       } else {
+        // Reset adoption status on failure
+        setAdoptionStatus((prev) => ({
+          ...prev,
+          [petId]: null,
+        }));
         toast.error(data.message || "Adoption request failed.");
       }
     } catch (error) {
+      setAdoptionStatus((prev) => ({
+        ...prev,
+        [petId]: null,
+      }));
       toast.error("Something went wrong.");
       console.error(error);
     }
@@ -53,6 +96,7 @@ const MainSection = ({ onPetDetails, onAdoptPet, onLoginClick }) => {
   const [likedPets, setLikedPets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [adoptionStatus, setAdoptionStatus] = useState({});
 
   useEffect(() => {
     fetchPets();
@@ -156,6 +200,7 @@ const MainSection = ({ onPetDetails, onAdoptPet, onLoginClick }) => {
                   onAdopt={() => handleAdoptPet(pet._id, pet.posted_by)}
                   onLoginClick={onLoginClick}
                   petOwnerId={pet.posted_by}
+                  adoptionStatus={adoptionStatus[pet._id] || pet.status}
                 />
               ))
             )}

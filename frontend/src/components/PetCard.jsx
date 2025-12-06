@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt, onLoginClick, petOwnerId }) => {
+const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt, onLoginClick, petOwnerId, adoptionStatus }) => {
   const [isAdopted, setIsAdopted] = useState(false);
 
   const handleAdopt = () => {
@@ -24,6 +24,13 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt, onLoginClick, pet
     const user = JSON.parse(localStorage.getItem("peddy-user"));
     const user_id = user?.user_id;
     return user_id && user_id === petOwnerId;
+  };
+
+  const getButtonStatus = () => {
+    if (adoptionStatus === "adopted") return "adopted";
+    if (adoptionStatus === "pending") return "pending";
+    if (isAdopted) return "adopted";
+    return null;
   };
 
   const pet_name = checkNull(pet.name);
@@ -79,13 +86,13 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt, onLoginClick, pet
           </button>
           <button
             onClick={handleAdopt}
-            disabled={isAdopted || isOwnPet()}
+            disabled={isOwnPet() || getButtonStatus() !== null}
             title={isOwnPet() ? "Cannot adopt your own pet" : ""}
             className={`btn bg-inherit border border-green-text/20 text-green-text text-[18px] rounded-[8px] font-bold ${
-              isAdopted || isOwnPet() ? "bg-gray-300" : ""
+              (isOwnPet() || getButtonStatus() !== null) ? "bg-gray-300" : ""
             }`}
           >
-            {isAdopted ? "Adopted" : isOwnPet() ? "Can't Adopt" : "Adopt"}
+            {getButtonStatus() === "adopted" ? "Adopted" : getButtonStatus() === "pending" ? "Pending" : isOwnPet() ? "Can't Adopt" : "Adopt"}
           </button>
           <button
             onClick={onDetails}

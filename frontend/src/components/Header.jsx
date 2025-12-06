@@ -6,17 +6,23 @@ import "react-toastify/dist/ReactToastify.css";
 const Header = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     const user = localStorage.getItem("peddy-user");
-    setIsLoggedIn(!!user);
+    if (user) {
+      setIsLoggedIn(true);
+      const userData = JSON.parse(user);
+      setUserName(userData.name || "");
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("peddy-user");
     setIsLoggedIn(false);
+    setUserName("");
     setDropdownOpen(false);
     toast.success("Logged out successfully", {
       position: "top-right",
@@ -83,7 +89,7 @@ const Header = ({ onLoginClick, onRegisterClick }) => {
               </div>
               <div className="flex gap-[10px] items-center">
                 <img src="/images/logo.webp" alt="Peddy Logo" />
-                <p className="font-extrabold text-black text-[32px]">Peddy</p>
+                <p className="font-extrabold text-black text-[32px]">PawNest</p>
               </div>
             </div>
             <div className="navbar-center hidden lg:flex">
@@ -119,6 +125,11 @@ const Header = ({ onLoginClick, onRegisterClick }) => {
                     Register
                   </button>
                 </>
+              )}
+              {isLoggedIn && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-700 font-medium hidden sm:inline">{userName}</span>
+                </div>
               )}
               <button
                 className="btn bg-inherit border-blue-100 rounded-full"

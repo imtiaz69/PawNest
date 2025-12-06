@@ -12,9 +12,10 @@ const petSchema = new Schema(
     category: { type: String, enum: ["dog", "cat", "rabit", "bird"] },
     posted_by: { type: Schema.Types.ObjectId, ref: "User", required: true },
     request_by: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    adopted_by: { type: Schema.Types.ObjectId, ref: "User", default: null },
     status: {
       type: String,
-      enum: ["available", "adopted"],
+      enum: ["available", "pending", "adopted"],
       default: "available",
     },
   },
