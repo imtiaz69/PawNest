@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Header = ({ onLoginClick }) => {
+const Header = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -109,7 +109,17 @@ const Header = ({ onLoginClick }) => {
                 </li>
               </ul>
             </div>
-            <div className="navbar-end relative" ref={dropdownRef}>
+            <div className="navbar-end relative flex gap-2" ref={dropdownRef}>
+              {!isLoggedIn && (
+                <>
+                  <button
+                    className="btn bg-button-bg text-white rounded-full hover:bg-button-bg/80"
+                    onClick={onRegisterClick}
+                  >
+                    Register
+                  </button>
+                </>
+              )}
               <button
                 className="btn bg-inherit border-blue-100 rounded-full"
                 onClick={isLoggedIn ? toggleDropdown : onLoginClick}

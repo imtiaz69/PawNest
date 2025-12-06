@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import LoginPage from "./components/LoginPage.jsx";
+import RegistrationPage from "./components/RegistrationPage.jsx";
 import Banner from "./components/Banner.jsx";
 import MainSection from "./components/MainSection.jsx";
 import Footer from "./components/Footer.jsx";
@@ -18,6 +19,7 @@ function App() {
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
   const [adoptingPetId, setAdoptingPetId] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [cart, setCart] = useState([]);
 
   const handlePetDetails = (pet) => {
@@ -57,7 +59,10 @@ function App() {
             path="/profile"
             element={
               <>
-                <Header />
+                <Header
+                  onLoginClick={() => setShowLogin(true)}
+                  onRegisterClick={() => setShowRegister(true)}
+                />
                 <Profile />
                 <Footer />
               </>
@@ -67,7 +72,10 @@ function App() {
             path="/create-post"
             element={
               <>
-                <Header />
+                <Header
+                  onLoginClick={() => setShowLogin(true)}
+                  onRegisterClick={() => setShowRegister(true)}
+                />
                 <CreatePost />
                 <Footer />
               </>
@@ -78,7 +86,10 @@ function App() {
             path="/"
             element={
               <>
-                <Header onLoginClick={() => setShowLogin(true)} />
+                <Header
+                  onLoginClick={() => setShowLogin(true)}
+                  onRegisterClick={() => setShowRegister(true)}
+                />
                 <Banner />
                 <MainSection
                   onPetDetails={handlePetDetails}
@@ -97,7 +108,18 @@ function App() {
                     onClose={closeAdoptionModal}
                   />
                 )}
-                {showLogin && <LoginPage onClose={() => setShowLogin(false)} />}
+                {showLogin && (
+                  <LoginPage onClose={() => setShowLogin(false)} />
+                )}
+                {showRegister && (
+                  <RegistrationPage
+                    onClose={() => setShowRegister(false)}
+                    onSwitchToLogin={() => {
+                      setShowRegister(false);
+                      setShowLogin(true);
+                    }}
+                  />
+                )}
               </>
             }
           />
