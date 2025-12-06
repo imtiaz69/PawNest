@@ -7,6 +7,7 @@ const petSchema = new Schema(
     image: { type: String },
     DOB: { type: Date },
     breed: { type: String },
+    location: { type: String },
     gender: { type: String, enum: ["Male", "Female", "Neuter", "Other"] },
     category: { type: String, enum: ["dog", "cat", "rabit", "bird"] },
     posted_by: { type: Schema.Types.ObjectId, ref: "User", required: true },

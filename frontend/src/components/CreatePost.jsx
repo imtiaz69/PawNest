@@ -11,6 +11,7 @@ const CreatePost = () => {
     details: "",
     DOB: "",
     breed: "",
+    location: "",
     gender: "",
     category: "",
     image: null,
@@ -48,6 +49,7 @@ const CreatePost = () => {
     data.append("details", formData.details);
     data.append("DOB", formData.DOB);
     data.append("breed", formData.breed);
+    data.append("location", formData.location);
     data.append("gender", formData.gender);
     data.append("category", formData.category);
     data.append("image", formData.image);
@@ -116,6 +118,14 @@ const CreatePost = () => {
           name="breed"
           placeholder="Breed"
           value={formData.breed}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
+        />
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={formData.location}
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded"
         />

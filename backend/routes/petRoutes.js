@@ -11,7 +11,7 @@ router.post(
   upload.single("image"),
   uploadToCloudinary("pet_posts"),
   async (req, res) => {
-    const { name, details, DOB, breed, gender, category, posted_by } = req.body;
+    const { name, details, DOB, breed, location, gender, category, posted_by } = req.body;
 
     try {
       const newPost = await Pet.create({
@@ -20,6 +20,7 @@ router.post(
         image: req.file?.cloudinaryUrl || "", // Cloudinary URL
         DOB,
         breed,
+        location,
         gender,
         category,
         posted_by,
@@ -118,5 +119,25 @@ router.post("/adopt-request", async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pet = await Pet.findById(id);
+
+    if (!pet) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Pet not found." });
+    }
+
+    res.status(200).json({ success: true, pet });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 
 export default router;

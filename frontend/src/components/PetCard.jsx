@@ -12,6 +12,7 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt }) => {
   const breed = checkNull(pet.breed);
   const gender = checkNull(pet.gender);
   const rawDOB = checkNull(pet.DOB);
+  const location = checkNull(pet.location)
   const date_of_birth = rawDOB
     ? new Date(rawDOB).toLocaleDateString("en-US", {
         year: "numeric",
@@ -42,6 +43,10 @@ const PetCard = ({ pet, checkNull, onLike, onDetails, onAdopt }) => {
         <div className="flex gap-1">
           <img src="/images/gender.png" alt="Gender icon" />
           <h1 className="text-[16px] text-gray-500">Gender: {gender}</h1>
+        </div>
+        <div className="flex gap-1">
+          <img src="/images/location.png" alt="Gender icon" />
+          <h1 className="text-[16px] text-gray-500">Location: {location}</h1>
         </div>
         {/* <div className="flex gap-1 items-center mb-2">
           <img src="/images/dollar.png" alt="Price icon" />
